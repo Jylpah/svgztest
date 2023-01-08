@@ -1,6 +1,6 @@
 # HOWTO use SVGZ images on GitHub Pages
 
-**TL;DR** use CloudFlare to modify HTTP request/response headers
+**TL;DR** rename `.svgz` images as `.svg.gz` and use CloudFlare to modify HTTP response headers
 
 ## Introduction
 
@@ -23,6 +23,10 @@
 
 [CloudFlare](cloudflare.com/) is a Content Distribution Network / CDN. It's free plan includes three [Transform Rules](https://developers.cloudflare.com/rules/transform/) to modify HTTP request/response headers. 
 
+### SVGZ Images
+
+*Requires both HTTP Request and Response header modification* 
+
 To use SVGZ images on [GitHub Pages](https://pages.github.com/), you need first to trick GitHub Pages not to double-compress SVGZ images and then add required HTTP response headers for the SVGZ images: 
 
 1. Create a [CloudFlare](cloudflare.com/) account and add your web site there. You do not need to use CloudFlare Pages, just add your GitHub Pages as a "website".
@@ -42,6 +46,19 @@ To use SVGZ images on [GitHub Pages](https://pages.github.com/), you need first 
 <img width="729" alt="image" src="https://user-images.githubusercontent.com/43722525/211172546-a19d4000-7117-4b92-96b6-51f91a27683a.png">
 
 4. You are all set! 
+
+## SVG.GZ Images (recommended way)
+
+If you rename `.svgz` images to `.svg.gz` images, it will require only HTTP Response header modification since GitHub Pages recognizes `.gz` suffix and does not try double-compress those. 
+
+1. Add a  HTTP Response Header Modification Rule to add correct headers for SVG.GZ images:
+* On CloudFlare dashboard: Rules -> Transform Rules -> Add _HTTP Response Header Modification_:
+* A custom filter expression: `(ends_with(http.request.uri.path, ".svg.gz"))`
+* `Set static`: `content-encoding: gzip`
+* `Set static`: `content-type: image/svg+xml`. I am also setting `charset=utf-8` since my SVG content is UTF-8 encoded. 
+
+<img width="792" alt="image" src="https://user-images.githubusercontent.com/43722525/211192735-e42aecc8-9f2e-4464-98b1-7ed54d94e6a5.png">
+
 
 ## Proof 
 
